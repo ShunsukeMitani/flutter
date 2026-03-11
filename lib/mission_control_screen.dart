@@ -59,7 +59,7 @@ class _MissionControlScreenState extends State<MissionControlScreen> {
         ),
         const SizedBox(height: 5),
         DropdownButtonFormField<String>(
-          value: selectedType,
+          initialValue: selectedType,
           dropdownColor: Colors.grey[800],
           style: const TextStyle(color: Colors.white),
           decoration: const InputDecoration(
@@ -151,7 +151,7 @@ class _MissionControlScreenState extends State<MissionControlScreen> {
                         "特定の場所でのみ入力可能にする",
                         style: TextStyle(color: Colors.grey, fontSize: 10),
                       ),
-                      activeColor: Colors.indigoAccent,
+                      activeThumbColor: Colors.indigoAccent,
                       value: isLocationRestricted,
                       onChanged: (val) {
                         setState(() {
@@ -183,8 +183,9 @@ class _MissionControlScreenState extends State<MissionControlScreen> {
                               ),
                             ),
                           );
-                          if (result != null && result is LatLng)
+                          if (result != null && result is LatLng) {
                             setState(() => inputLocation = result);
+                          }
                         },
                       ),
 
@@ -280,9 +281,9 @@ class _MissionControlScreenState extends State<MissionControlScreen> {
                     int count = runners.length;
                     for (int i = 0; i < count; i++) {
                       String hint = "";
-                      if (count == 1)
+                      if (count == 1) {
                         hint = "コードは「$code」";
-                      else if (count == 2)
+                      } else if (count == 2)
                         hint = (i == 0)
                             ? "1,2文字目: ${digits[0]}${digits[1]}"
                             : "3,4文字目: ${digits[2]}${digits[3]}";
@@ -398,8 +399,9 @@ class _MissionControlScreenState extends State<MissionControlScreen> {
                             ),
                           ),
                         );
-                        if (result != null)
+                        if (result != null) {
                           setState(() => _selectedAreaA = result);
+                        }
                       },
                     ),
                     const SizedBox(height: 5),
@@ -424,8 +426,9 @@ class _MissionControlScreenState extends State<MissionControlScreen> {
                             ),
                           ),
                         );
-                        if (result != null)
+                        if (result != null) {
                           setState(() => _selectedAreaB = result);
+                        }
                       },
                     ),
 
@@ -593,12 +596,13 @@ class _MissionControlScreenState extends State<MissionControlScreen> {
                             .collection('games')
                             .doc('game_001')
                             .update({'hunterBoxes': boxes});
-                        if (mounted)
+                        if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text("${boxes.length}個のBOXを設置しました"),
                             ),
                           );
+                        }
                       }
                     },
                   ),
@@ -736,7 +740,7 @@ class _MissionControlScreenState extends State<MissionControlScreen> {
               DateTime end = now.add(Duration(minutes: min));
 
               String bodyText =
-                  "牢獄に捕らわれた逃走者を復活させるチャンスだ。残り$min分までに、${groupSize}人組で写真を撮影し、GMに送信せよ。条件をクリアするごとに、復活カードを1枚獲得できる。ただし、1人の逃走者につき獲得できる復活カードは1枚まで、さらに、発行できる復活カードは最大${limit}枚までとなっている。制限時間内に仲間を救い出せるかは、君たちの行動次第だ。";
+                  "牢獄に捕らわれた逃走者を復活させるチャンスだ。残り$min分までに、$groupSize人組で写真を撮影し、GMに送信せよ。条件をクリアするごとに、復活カードを1枚獲得できる。ただし、1人の逃走者につき獲得できる復活カードは1枚まで、さらに、発行できる復活カードは最大$limit枚までとなっている。制限時間内に仲間を救い出せるかは、君たちの行動次第だ。";
 
               await FirebaseFirestore.instance
                   .collection('games')
@@ -821,7 +825,7 @@ class _MissionControlScreenState extends State<MissionControlScreen> {
                         "規定人数確保で終了",
                         style: TextStyle(color: Colors.white),
                       ),
-                      activeColor: Colors.orange,
+                      activeThumbColor: Colors.orange,
                       value: enableEndCondition,
                       onChanged: (val) =>
                           setState(() => enableEndCondition = val),

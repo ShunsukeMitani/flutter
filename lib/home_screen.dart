@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       FlutterLocalNotificationsPlugin();
   final ImagePicker _picker = ImagePicker();
   bool _isConnected = true;
-  Set<String> _readMessageIds = {};
+  final Set<String> _readMessageIds = {};
   bool _isLocked = false;
 
   bool _hasValidUserLoaded = false;
@@ -563,8 +563,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           .doc(partnerUid)
           .update({'isBusy': false, 'talkingWith': null});
     }
-    if (!silent)
+    if (!silent) {
       messenger.showSnackBar(const SnackBar(content: Text("通話を終了しました")));
+    }
   }
 
   Future<void> _sendCallRequest(
@@ -679,8 +680,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 .where('status', isEqualTo: 'ALIVE')
                 .snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData)
+              if (!snapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());
+              }
               var docs = snapshot.data!.docs;
               String myUid = FirebaseAuth.instance.currentUser!.uid;
 
@@ -742,7 +744,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                     _sendCallRequest(
                                       data['name'],
                                       docs[index].id,
-                                      channelId!,
+                                      channelId,
                                     );
                                   },
                           ),
@@ -1028,16 +1030,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 .where('status', isEqualTo: 'ALIVE')
                 .snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData)
+              if (!snapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());
+              }
               var docs = snapshot.data!.docs
                   .where((d) => d.id != FirebaseAuth.instance.currentUser!.uid)
                   .toList();
-              if (docs.isEmpty)
+              if (docs.isEmpty) {
                 return const Text(
                   "他逃走者なし",
                   style: TextStyle(color: Colors.white),
                 );
+              }
               return ListView.builder(
                 itemCount: docs.length,
                 itemBuilder: (context, index) {
@@ -1189,14 +1193,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 .where('status', isEqualTo: 'ALIVE')
                 .snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData)
+              if (!snapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());
+              }
               return ListView.builder(
                 itemCount: snapshot.data!.docs.length,
                 itemBuilder: (context, index) {
                   var d = snapshot.data!.docs[index];
-                  if (d.id == FirebaseAuth.instance.currentUser!.uid)
+                  if (d.id == FirebaseAuth.instance.currentUser!.uid) {
                     return const SizedBox();
+                  }
 
                   return ListTile(
                     title: Text(
@@ -1319,29 +1325,32 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 .orderBy('createdAt', descending: true)
                 .snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty)
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                 return const Center(
                   child: Text(
                     "メッセージはありません",
                     style: TextStyle(color: Colors.grey),
                   ),
                 );
+              }
               String myUid = FirebaseAuth.instance.currentUser!.uid;
               var docs = snapshot.data!.docs.where((doc) {
                 var d = doc.data() as Map<String, dynamic>;
-                if (d['visibleTo'] != null && d['visibleTo'] != widget.myRole)
+                if (d['visibleTo'] != null && d['visibleTo'] != widget.myRole) {
                   return false;
+                }
                 String toUid = d['toUid'] ?? "ALL";
                 String fromUid = d['fromUid'] ?? "";
                 return toUid == "ALL" || toUid == myUid || fromUid == myUid;
               }).toList();
-              if (docs.isEmpty)
+              if (docs.isEmpty) {
                 return const Center(
                   child: Text(
                     "メッセージはありません",
                     style: TextStyle(color: Colors.grey),
                   ),
                 );
+              }
               return ListView.separated(
                 itemCount: docs.length,
                 separatorBuilder: (ctx, i) =>
@@ -1464,7 +1473,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              activeColor: Colors.orangeAccent,
+                              activeThumbColor: Colors.orangeAccent,
                               value: sendToAll,
                               onChanged: (val) {
                                 setDialogState(() {
@@ -2164,8 +2173,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     );
 
                     if (activeMission.isEmpty ||
-                        activeMission['type'] != 'CODE')
+                        activeMission['type'] != 'CODE') {
                       return;
+                    }
 
                     List<dynamic> cleared = List.from(
                       activeMission['clearedUids'] ?? [],
@@ -2339,8 +2349,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     : "${left.inMinutes}:${(left.inSeconds % 60).toString().padLeft(2, '0')}";
                 int elapsed = now.difference(startTime).inSeconds;
                 if (elapsed < 0) elapsed = 0;
-                if (now.isAfter(endTime))
+                if (now.isAfter(endTime)) {
                   elapsed = endTime.difference(startTime).inSeconds;
+                }
 
                 double currentMoney = elapsed * moneyRate;
                 String moneyStr;
@@ -2527,8 +2538,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             String fromUid = data['fromUid'] ?? "";
             bool isRelevant =
                 (toUid == "ALL" || toUid == myUid || fromUid == myUid);
-            if (data['visibleTo'] != null && data['visibleTo'] != widget.myRole)
+            if (data['visibleTo'] != null && data['visibleTo'] != widget.myRole) {
               isRelevant = false;
+            }
             return isRelevant && !_readMessageIds.contains(d.id);
           }).length;
         }
@@ -2573,8 +2585,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       stream: Stream.periodic(const Duration(seconds: 1)),
       builder: (context, _) {
         Duration diff = endTime.toDate().difference(DateTime.now());
-        if (diff.isNegative || diff.inSeconds <= 0)
+        if (diff.isNegative || diff.inSeconds <= 0) {
           return const SizedBox.shrink();
+        }
         return Container(
           margin: const EdgeInsets.only(top: 10),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
@@ -2603,8 +2616,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           .doc('game_001')
           .snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData || !snapshot.data!.exists)
+        if (!snapshot.hasData || !snapshot.data!.exists) {
           return const SizedBox();
+        }
         var data = snapshot.data!.data() as Map<String, dynamic>;
         String status = data['status'] ?? "WAITING";
         if (data.containsKey('startTime')) {
@@ -2624,11 +2638,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 int diff = start.difference(now).inSeconds;
                 if (diff <= 0) {
                   displayTime = "START";
-                  if (isGM && diff < -2)
+                  if (isGM && diff < -2) {
                     FirebaseFirestore.instance
                         .collection('games')
                         .doc('game_001')
                         .update({'status': 'ACTIVE'});
+                  }
                 } else {
                   displayTime = "READY $diff";
                 }
@@ -2851,10 +2866,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           if (amIBusy) _buildBusyWarning(),
 
                           if (activeMission != null)
-                            _buildMissionWidget(activeMission!, photoStatus),
+                            _buildMissionWidget(activeMission, photoStatus),
                           if (activeMission != null &&
-                              activeMission!['endTime'] != null)
-                            _buildMissionTimer(activeMission!['endTime']),
+                              activeMission['endTime'] != null)
+                            _buildMissionTimer(activeMission['endTime']),
 
                           const SizedBox(height: 30),
                           Padding(
@@ -3050,8 +3065,9 @@ class GameResultScreen extends StatelessWidget {
             .doc('game_001')
             .snapshots(),
         builder: (context, gameSnap) {
-          if (!gameSnap.hasData)
+          if (!gameSnap.hasData) {
             return const Center(child: CircularProgressIndicator());
+          }
           var gameData = gameSnap.data!.data() as Map<String, dynamic>;
 
           DateTime startTime = (gameData['startTime'] as Timestamp).toDate();
@@ -3069,8 +3085,9 @@ class GameResultScreen extends StatelessWidget {
                 .collection('players')
                 .snapshots(),
             builder: (context, playerSnap) {
-              if (!playerSnap.hasData)
+              if (!playerSnap.hasData) {
                 return const Center(child: CircularProgressIndicator());
+              }
 
               var docs = playerSnap.data!.docs;
               var winners = docs
@@ -3317,16 +3334,18 @@ class PhotoReviewScreen extends StatelessWidget {
             // ★修正: orderByを削除しました（これでグルグルが直ります）
             .snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
+          if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
+          }
           var docs = snapshot.data!.docs;
-          if (docs.isEmpty)
+          if (docs.isEmpty) {
             return const Center(
               child: Text(
                 "審査待ちの写真はありません",
                 style: TextStyle(color: Colors.white),
               ),
             );
+          }
 
           return ListView.builder(
             itemCount: docs.length,
@@ -3573,13 +3592,14 @@ class _SettingsAppScreenState extends State<SettingsAppScreen> {
         .doc('game_001')
         .collection('players')
         .get();
-    for (var d in p.docs)
+    for (var d in p.docs) {
       d.reference.update({
         'status': 'ALIVE',
         'money': 0,
         'isReported': false,
         'photoVerificationStatus': null,
       });
+    }
     if (mounted) Navigator.pop(context);
   }
 
@@ -3659,7 +3679,9 @@ class _SettingsAppScreenState extends State<SettingsAppScreen> {
         .doc('game_001')
         .collection('players')
         .get();
-    for (var d in p.docs) d.reference.delete();
+    for (var d in p.docs) {
+      d.reference.delete();
+    }
     messenger.showSnackBar(const SnackBar(content: Text("データ消去完了")));
   }
 
@@ -3690,7 +3712,7 @@ class _SettingsAppScreenState extends State<SettingsAppScreen> {
               style: TextStyle(color: Colors.white),
             ),
             value: _hunterVision,
-            activeColor: Colors.redAccent,
+            activeThumbColor: Colors.redAccent,
             onChanged: (v) => setState(() => _hunterVision = v),
           ),
           SwitchListTile(
@@ -3703,7 +3725,7 @@ class _SettingsAppScreenState extends State<SettingsAppScreen> {
               style: TextStyle(color: Colors.grey, fontSize: 12),
             ),
             value: _allowSurrender,
-            activeColor: Colors.yellowAccent,
+            activeThumbColor: Colors.yellowAccent,
             onChanged: (v) => setState(() => _allowSurrender = v),
           ),
           const SizedBox(height: 20),
@@ -3870,8 +3892,9 @@ class _DiscordManagementScreenState extends State<DiscordManagementScreen> {
                   .orderBy('createdAt', descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData)
+                if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
+                }
                 return ListView.separated(
                   itemCount: snapshot.data!.docs.length,
                   separatorBuilder: (ctx, i) =>

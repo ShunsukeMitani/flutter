@@ -16,7 +16,7 @@ class _AreaEditorScreenState extends State<AreaEditorScreen> {
   List<LatLng> _playArea = [];
   List<List<LatLng>> _forbiddenAreas = [];
   
-  List<LatLng> _currentPolygon = [];
+  final List<LatLng> _currentPolygon = [];
   String _editMode = 'PLAY_AREA'; // 'PLAY_AREA' または 'FORBIDDEN'
 
   @override

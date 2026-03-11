@@ -42,7 +42,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 
   late String _editMode;
   List<LatLng> _tempAreaPoints = [];
-  List<Marker> _tempBoxMarkers = [];
+  final List<Marker> _tempBoxMarkers = [];
   LatLng? _selectedSinglePoint;
 
   List<dynamic> _cachedSurrenderPoints = [];
@@ -82,8 +82,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 
   void _startTracking() async {
     LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied)
+    if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
+    }
     _updatePosition();
     _positionTimer = Timer.periodic(
       const Duration(seconds: 5),
@@ -437,10 +438,11 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
         ).showSnackBar(const SnackBar(content: Text("封印完了！通知を送信しました。")));
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("エラー: $e")));
+      }
     }
   }
 
@@ -539,8 +541,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                 .where('status', isEqualTo: 'ALIVE')
                 .snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData)
+              if (!snapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());
+              }
               return ListView.builder(
                 itemCount: snapshot.data!.docs.length,
                 itemBuilder: (context, index) {
@@ -635,22 +638,22 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     bool isGM = (widget.myRole == 'GAME MASTER');
     bool isHunter = (widget.myRole == 'HUNTER');
     Widget? actionBtn;
-    if (isHunter)
+    if (isHunter) {
       actionBtn = FloatingActionButton.extended(
         heroTag: "catch",
         backgroundColor: Colors.red,
         label: const Text("確保"),
         onPressed: _catchRunner,
       );
-    else if (!isGM) {
-      if (_isOutOfArea)
+    } else if (!isGM) {
+      if (_isOutOfArea) {
         actionBtn = FloatingActionButton.extended(
           heroTag: "alert",
           backgroundColor: Colors.red,
           label: const Text("⚠️ エリア違反"),
           onPressed: null,
         );
-      else if (_isSurrenderPossible)
+      } else if (_isSurrenderPossible)
         actionBtn = FloatingActionButton.extended(
           heroTag: "surrender",
           backgroundColor: Colors.yellowAccent,
@@ -750,8 +753,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           .doc('game_001')
           .snapshots(),
       builder: (context, gameSnap) {
-        if (!gameSnap.hasData)
+        if (!gameSnap.hasData) {
           return const Center(child: CircularProgressIndicator());
+        }
         var d = gameSnap.data!.data() as Map<String, dynamic>;
 
         List surrenderPoints = d['surrenderPoints'] ?? [];
@@ -773,8 +777,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
         List<dynamic> targetPoints = defaultArea;
 
         String? myAssigned = assignments[_uid];
-        if (myAssigned != null && splitAreas.containsKey(myAssigned))
+        if (myAssigned != null && splitAreas.containsKey(myAssigned)) {
           targetPoints = splitAreas[myAssigned];
+        }
           
         if (targetPoints.isNotEmpty) {
           displayPolygon = targetPoints
@@ -890,7 +895,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   borderStrokeWidth: 2,
                 ),
               );
-              for (var p in _tempAreaPoints)
+              for (var p in _tempAreaPoints) {
                 markers.add(
                   Marker(
                     point: p,
@@ -903,9 +908,10 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                     ),
                   ),
                 );
+              }
             }
             if (_editMode == 'BOX') markers.addAll(_tempBoxMarkers);
-            if (_editMode == 'LOCATION' && _selectedSinglePoint != null)
+            if (_editMode == 'LOCATION' && _selectedSinglePoint != null) {
               markers.add(
                 Marker(
                   point: _selectedSinglePoint!,
@@ -918,6 +924,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   ),
                 ),
               );
+            }
 
             // ハンターBOX
             for (var b in hunterBoxes) {
@@ -929,8 +936,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   height: 50,
                   child: GestureDetector(
                     onTap: () {
-                      if (!locked && isBoxMission && widget.myRole == 'RUNNER')
+                      if (!locked && isBoxMission && widget.myRole == 'RUNNER') {
                         _lockHunterBox(b);
+                      }
                     },
                     child: Column(
                       children: [
@@ -1045,9 +1053,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                 if (isCaught || isSurrendered) continue;
 
                 bool visible = false;
-                if (isMe || isGM)
+                if (isMe || isGM) {
                   visible = true;
-                else if (pd['role'] == 'HUNTER' && isHunter)
+                } else if (pd['role'] == 'HUNTER' && isHunter)
                   visible = true;
                 else if (isHunter && (isExposed || isOutOfArea))
                   visible = true;
