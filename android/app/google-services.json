@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "722927574519",
+    "project_id": "run-for-money-f042a",
+    "storage_bucket": "run-for-money-f042a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:722927574519:android:03ed2ceb0f59bb8bea62f2",
+        "android_client_info": {
+          "package_name": "com.example.run_for_money"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFeBwV9OvN3XUjqyNcpBnH2sDSYZAOOVc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
